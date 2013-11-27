@@ -36,26 +36,26 @@ namespace Communicator
         public Processor(bool backgroundLoading)
         {
             rc = new RESTCommunicator(BASE_LINK);
-            if (backgroundLoading)
-            {
-                buffer_thread = new Thread(new ThreadStart(StartBackgroundBuffering));
-                buffer_thread_alive = true;
-                buffer_thread.Start();
-            }
+            StartBackgroundBuffering(backgroundLoading);
         }
 
         public Processor(string link, bool backgroundLoading)
         {
             rc = new RESTCommunicator(link);
+            StartBackgroundBuffering(backgroundLoading);
+        }
+
+        private void StartBackgroundBuffering(bool backgroundLoading)
+        {
             if (backgroundLoading)
             {
-                buffer_thread = new Thread(new ThreadStart(StartBackgroundBuffering));
+                buffer_thread = new Thread(new ThreadStart(BackgroundBuffering));
                 buffer_thread_alive = true;
                 buffer_thread.Start();
             }
         }
 
-        private void StartBackgroundBuffering()
+        private void BackgroundBuffering()
         {
             while (buffer_thread_alive)
             {
