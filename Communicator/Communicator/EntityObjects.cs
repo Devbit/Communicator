@@ -95,7 +95,15 @@ namespace Communicator
         public string email { get; set; }
         public string phone { get; set; }
         public string person { get; set; }
-        public string address { get; set; }
+        public Address address { get; set; }
+    }
+
+    public class Address
+    {
+        public string city { get; set; }
+        public string company { get; set; }
+        public string street { get; set; }
+        public string postal { get; set; }
     }
 
     public class Details
