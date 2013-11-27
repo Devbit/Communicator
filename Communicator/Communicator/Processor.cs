@@ -12,7 +12,7 @@ namespace Communicator
     public class Processor
     {
         private RESTCommunicator rc;
-        private int currentPosition = 1;
+        private int currentPage = 10375;
         private int AMOUNT = 25;
         private string BASE_LINK = "http://127.0.0.1:5000";
         private string PROFILE_LINK = "profiles";
@@ -45,6 +45,11 @@ namespace Communicator
             StartBackgroundBuffering(backgroundLoading);
         }
 
+        public void SetPage(int page)
+        {
+            currentPage = page;
+        }
+
         private void StartBackgroundBuffering(bool backgroundLoading)
         {
             if (backgroundLoading)
@@ -71,13 +76,19 @@ namespace Communicator
 
         public List<Profile> GetNextProfiles()
         {
+            Console.WriteLine(currentPage);
             if (wbuffer.Count == 0)
             {
                 LoadNextProfileBuffer();
             }
-            List<Profile> result;
-            wbuffer.TryDequeue(out result);
-            return result;
+            if (wbuffer.Count > 0)
+            {
+                List<Profile> result;
+                wbuffer.TryDequeue(out result);
+                return result;
+            }
+            return new List<Profile>();
+            
         }
 
         public bool HasNextProfiles()
@@ -91,9 +102,13 @@ namespace Communicator
             {
                 LoadNextVacancyBuffer();
             }
-            List<Vacancy> result;
-            vbuffer.TryDequeue(out result);
-            return result;
+            if (vbuffer.Count > 0)
+            {
+                List<Vacancy> result;
+                vbuffer.TryDequeue(out result);
+                return result;
+            }
+            return new List<Vacancy>();
         }
 
         public bool HasNextVacancies()
@@ -103,14 +118,23 @@ namespace Communicator
 
         private void LoadNextProfileBuffer()
         {
-            List<Profile> wl = FetchProfiles(currentPosition, AMOUNT);
-            currentPosition++;
+            List<Profile> wl = FetchProfiles(currentPage, AMOUNT);
+            if (wl.Count == 0)
+            {
+                StopBackgroundBuffering();
+                return;
+            }
+            currentPage++;
             wbuffer.Enqueue(wl);
         }
 
         private void LoadNextVacancyBuffer()
         {
             List<Vacancy> vl = FetchVacancies(1, 10000);
+            if (vl.Count == 0)
+            {
+                return;
+            }
             vbuffer.Enqueue(vl);
         }
 

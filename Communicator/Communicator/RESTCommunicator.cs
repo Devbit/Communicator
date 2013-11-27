@@ -11,8 +11,10 @@ namespace Communicator
 {
     public class RESTCommunicator
     {
-        private String baseURL = "";
+        private string baseURL = "";
         private string AUTH = "Basic YWRtaW46dHpsVlEzRG4zd1Jwc3JONnNjY1U5b0ZvUENmS21B";
+        private int lastPage = 0;
+        private bool hasNextPage = true;
 
         private RESTCommunicator() { }
 
@@ -21,9 +23,14 @@ namespace Communicator
             this.baseURL = baseURL;
         }
 
+        public bool HasNextPage() 
+        {
+            return hasNextPage;
+        }
+
         public List<Entity> GetFromREST(string link, int page = 1, int limit = 25)
         {
-            if (link == "")
+            if (link == "" || (!hasNextPage && page == lastPage))
             {
                 return new List<Entity>();
             }
@@ -36,19 +43,27 @@ namespace Communicator
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Authorization", AUTH);
 
-            IRestResponse<dynamic> response = client.Execute<dynamic>(request);
+            IRestResponse<JObject> response = client.Execute<JObject>(request);
 
-            List<Entity> results = ParseResponse(response.Data._items);
+            List<Entity> results = ParseResponse(response.Data);
             return results;
         }
 
-        private List<Entity> ParseResponse(JArray response){
+        private List<Entity> ParseResponse(JObject response){
             List<Entity> result = new List<Entity>();
-            List<JObject> t = JsonConvert.DeserializeObject<List<JObject>>(response.ToString());
+            List<JObject> t = JsonConvert.DeserializeObject<List<JObject>>(response["_items"].ToString());
             foreach (JObject k in t)
             {
                 result.Add(new Entity(k));
             }
+
+            Links links = new Links();
+            links = JsonConvert.DeserializeObject<Links>(response["_links"].ToString());
+            if (links.next == null)
+            {
+                hasNextPage = false;
+            }
+            
             return result;
         }
     }
@@ -61,6 +76,15 @@ namespace Communicator
         {
             this.data = j;
         }
+    }
+
+    public class Links
+    {
+        public JObject self { get; set; }
+        public JObject prev { get; set; }
+        public JObject next { get; set; }
+        public JObject last { get; set; }
+        public JObject parent { get; set; }
     }
 
     public class DynamicJsonDeserializer : IDeserializer
