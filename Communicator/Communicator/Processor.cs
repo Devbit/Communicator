@@ -31,6 +31,7 @@ namespace Communicator
         public Processor(string link)
         {
             rc = new RESTCommunicator(link);
+            //Test
         }
 
         public Processor(bool backgroundLoading)
