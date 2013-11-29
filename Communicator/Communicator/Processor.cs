@@ -1,31 +1,28 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Web;
 
 namespace Communicator
 {
     public class Processor
     {
         private RESTCommunicator rc;
-        private int currentPage = 10375;
-        private int AMOUNT = 25;
-        private string BASE_LINK = "http://127.0.0.1:5000";
-        private string PROFILE_LINK = "profiles";
-        private string VACATURE_LINK = "vacatures";
-        private Thread buffer_thread = null;
-        private int buffer_thread_delay = 3000;
-        private bool buffer_thread_alive = false;
-        private ConcurrentQueue<List<Profile>> wbuffer = new ConcurrentQueue<List<Profile>>();
-        private ConcurrentQueue<List<Vacancy>> vbuffer = new ConcurrentQueue<List<Vacancy>>();
+        private int _currentPage = 10375;
+        private const int Amount = 25;
+        private const string BaseLink = "http://127.0.0.1:5000";
+        private const string ProfileLink = "profiles";
+        private const string VacatureLink = "vacatures";
+        private const int BufferThreadDelay = 3000;
+        private Thread _bufferThread = null;
+        private bool _bufferThreadAlive = false;
+        private readonly ConcurrentQueue<List<Profile>> _wbuffer = new ConcurrentQueue<List<Profile>>();
+        private readonly ConcurrentQueue<List<Vacancy>> _vbuffer = new ConcurrentQueue<List<Vacancy>>();
 
         public Processor()
         {
-            rc = new RESTCommunicator(BASE_LINK);
+            rc = new RESTCommunicator(BaseLink);
         }
 
         public Processor(string link)
@@ -35,7 +32,7 @@ namespace Communicator
 
         public Processor(bool backgroundLoading)
         {
-            rc = new RESTCommunicator(BASE_LINK);
+            rc = new RESTCommunicator(BaseLink);
             StartBackgroundBuffering(backgroundLoading);
         }
 
@@ -47,44 +44,44 @@ namespace Communicator
 
         public void SetPage(int page)
         {
-            currentPage = page;
+            _currentPage = page;
         }
 
         private void StartBackgroundBuffering(bool backgroundLoading)
         {
             if (backgroundLoading)
             {
-                buffer_thread = new Thread(new ThreadStart(BackgroundBuffering));
-                buffer_thread_alive = true;
-                buffer_thread.Start();
+                _bufferThread = new Thread(new ThreadStart(BackgroundBuffering));
+                _bufferThreadAlive = true;
+                _bufferThread.Start();
             }
         }
 
         private void BackgroundBuffering()
         {
-            while (buffer_thread_alive)
+            while (_bufferThreadAlive)
             {
                 LoadNextProfileBuffer();
-                Thread.Sleep(buffer_thread_delay);
+                Thread.Sleep(BufferThreadDelay);
             }
         }
 
         public void StopBackgroundBuffering()
         {
-            buffer_thread_alive = false;
+            _bufferThreadAlive = false;
         }
 
         public List<Profile> GetNextProfiles()
         {
-            Console.WriteLine(currentPage);
-            if (wbuffer.Count == 0)
+            Console.WriteLine(_currentPage);
+            if (_wbuffer.Count == 0)
             {
                 LoadNextProfileBuffer();
             }
-            if (wbuffer.Count > 0)
+            if (_wbuffer.Count > 0)
             {
                 List<Profile> result;
-                wbuffer.TryDequeue(out result);
+                _wbuffer.TryDequeue(out result);
                 return result;
             }
             return new List<Profile>();
@@ -93,19 +90,19 @@ namespace Communicator
 
         public bool HasNextProfiles()
         {
-            return (wbuffer.Count > 0 ? true : false);
+            return (_wbuffer.Count > 0 ? true : false);
         }
 
         public List<Vacancy> GetNextVacancies()
         {
-            if (vbuffer.Count == 0)
+            if (_vbuffer.Count == 0)
             {
                 LoadNextVacancyBuffer();
             }
-            if (vbuffer.Count > 0)
+            if (_vbuffer.Count > 0)
             {
                 List<Vacancy> result;
-                vbuffer.TryDequeue(out result);
+                _vbuffer.TryDequeue(out result);
                 return result;
             }
             return new List<Vacancy>();
@@ -113,19 +110,19 @@ namespace Communicator
 
         public bool HasNextVacancies()
         {
-            return (vbuffer.Count > 0 ? true : false);
+            return (_vbuffer.Count > 0 ? true : false);
         }
 
         private void LoadNextProfileBuffer()
         {
-            List<Profile> wl = FetchProfiles(currentPage, AMOUNT);
+            List<Profile> wl = FetchProfiles(_currentPage, Amount);
             if (wl.Count == 0)
             {
                 StopBackgroundBuffering();
                 return;
             }
-            currentPage++;
-            wbuffer.Enqueue(wl);
+            _currentPage++;
+            _wbuffer.Enqueue(wl);
         }
 
         private void LoadNextVacancyBuffer()
@@ -135,18 +132,18 @@ namespace Communicator
             {
                 return;
             }
-            vbuffer.Enqueue(vl);
+            _vbuffer.Enqueue(vl);
         }
 
         private List<Vacancy> FetchVacancies(int begin, int amount)
         {
-            List<Entity> r = rc.GetFromREST(VACATURE_LINK, begin, amount);
+            List<Entity> r = rc.GetFromREST(VacatureLink, begin, amount);
             return ToVacancy(r);
         }
 
         private List<Profile> FetchProfiles(int begin, int amount)
         {
-            List<Entity> r = rc.GetFromREST(PROFILE_LINK, begin, amount);
+            List<Entity> r = rc.GetFromREST(ProfileLink, begin, amount);
             return ToProfile(r);
         }
 

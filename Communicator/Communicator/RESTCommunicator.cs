@@ -1,8 +1,5 @@
 ﻿using RestSharp;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using RestSharp.Deserializers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,25 +9,26 @@ namespace Communicator
     public class RESTCommunicator
     {
         private string baseURL = "";
-        private string AUTH = "Basic YWRtaW46dHpsVlEzRG4zd1Jwc3JONnNjY1U5b0ZvUENmS21B";
-        private int lastPage = 0;
-        private bool hasNextPage = true;
+        private const string Auth = "Basic YWRtaW46dHpsVlEzRG4zd1Jwc3JONnNjY1U5b0ZvUENmS21B";
+        private int _lastPage;
+        private bool _hasNextPage = true;
 
         private RESTCommunicator() { }
 
         public RESTCommunicator(string baseURL)
         {
             this.baseURL = baseURL;
+            _lastPage = 0;
         }
 
         public bool HasNextPage() 
         {
-            return hasNextPage;
+            return _hasNextPage;
         }
 
         public List<Entity> GetFromREST(string link, int page = 1, int limit = 25)
         {
-            if (link == "" || (!hasNextPage && page == lastPage))
+            if (link == "" || (!_hasNextPage && page == _lastPage))
             {
                 return new List<Entity>();
             }
@@ -41,7 +39,7 @@ namespace Communicator
             request.AddParameter("page", page);
             request.AddParameter("max_results", limit);
             request.AddHeader("Accept", "application/json");
-            request.AddHeader("Authorization", AUTH);
+            request.AddHeader("Authorization", Auth);
 
             IRestResponse<JObject> response = client.Execute<JObject>(request);
 
@@ -61,7 +59,7 @@ namespace Communicator
             links = JsonConvert.DeserializeObject<Links>(response["_links"].ToString());
             if (links.next == null)
             {
-                hasNextPage = false;
+                _hasNextPage = false;
             }
             
             return result;
@@ -78,7 +76,7 @@ namespace Communicator
         }
     }
 
-    public class Links
+    internal class Links
     {
         public JObject self { get; set; }
         public JObject prev { get; set; }
@@ -87,7 +85,7 @@ namespace Communicator
         public JObject parent { get; set; }
     }
 
-    public class DynamicJsonDeserializer : IDeserializer
+    internal class DynamicJsonDeserializer : IDeserializer
     {
         public string RootElement { get; set; }
         public string Namespace { get; set; }
