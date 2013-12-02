@@ -78,7 +78,6 @@ namespace Communicator
 
         public List<Profile> GetNextProfiles()
         {
-            Console.WriteLine(_currentPage);
             if (_wbuffer.Count == 0)
             {
                 LoadNextProfileBuffer();
@@ -91,6 +90,11 @@ namespace Communicator
             }
             return new List<Profile>();
             
+        }
+
+        public List<Profile> GetProfiles(int page)
+        {
+            return FetchProfiles(page, _amount);
         }
 
         public bool HasNextProfiles()
