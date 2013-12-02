@@ -9,8 +9,8 @@ namespace Communicator
     public class Processor
     {
         private RESTCommunicator rc;
-        private int _currentPage = 10375;
-        private const int Amount = 25;
+        private int _currentPage = 1;
+        private int _amount = 25;
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
         private const string VacatureLink = "vacatures";
@@ -45,6 +45,11 @@ namespace Communicator
         public void SetPage(int page)
         {
             _currentPage = page;
+        }
+
+        public void SetAmount(int amount)
+        {
+            _amount = amount;
         }
 
         private void StartBackgroundBuffering(bool backgroundLoading)
@@ -115,7 +120,7 @@ namespace Communicator
 
         private void LoadNextProfileBuffer()
         {
-            List<Profile> wl = FetchProfiles(_currentPage, Amount);
+            List<Profile> wl = FetchProfiles(_currentPage, _amount);
             if (wl.Count == 0)
             {
                 StopBackgroundBuffering();
