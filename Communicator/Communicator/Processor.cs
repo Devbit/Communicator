@@ -14,7 +14,7 @@ namespace Communicator
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
         private const string VacatureLink = "vacatures";
-        private const int BufferThreadDelay = 3000;
+        private const int BufferThreadDelay = 15000;
         private Thread _bufferThread = null;
         private bool _bufferThreadAlive = false;
         private readonly ConcurrentQueue<List<Profile>> _wbuffer = new ConcurrentQueue<List<Profile>>();
