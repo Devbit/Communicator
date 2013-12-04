@@ -20,23 +20,7 @@ namespace Communicator
         private readonly ConcurrentQueue<List<Profile>> _wbuffer = new ConcurrentQueue<List<Profile>>();
         private readonly ConcurrentQueue<List<Vacancy>> _vbuffer = new ConcurrentQueue<List<Vacancy>>();
 
-        public Processor()
-        {
-            rc = new RESTCommunicator(BaseLink);
-        }
-
-        public Processor(string link)
-        {
-            rc = new RESTCommunicator(link);
-        }
-
-        public Processor(bool backgroundLoading)
-        {
-            rc = new RESTCommunicator(BaseLink);
-            StartBackgroundBuffering(backgroundLoading);
-        }
-
-        public Processor(string link, bool backgroundLoading)
+        public Processor(string link = BaseLink, bool backgroundLoading = false)
         {
             rc = new RESTCommunicator(link);
             StartBackgroundBuffering(backgroundLoading);
