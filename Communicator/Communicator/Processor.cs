@@ -9,8 +9,10 @@ namespace Communicator
     public class Processor
     {
         private RESTCommunicator rc;
-        private int _currentPage = 1;
-        private int _amount = 25;
+        private int _currentProfilePage = 1;
+        private int _currentVacancyPage = 1;
+        private int _amountProfile = 25;
+        private int _amountVacancy = 25;
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
         private const string VacatureLink = "vacatures";
@@ -26,14 +28,24 @@ namespace Communicator
             StartBackgroundBuffering(backgroundLoading);
         }
 
-        public void SetPage(int page)
+        public void SetProfilePage(int page)
         {
-            _currentPage = page;
+            _currentProfilePage = page;
         }
 
-        public void SetAmount(int amount)
+        public void SetVacancyPage(int page)
         {
-            _amount = amount;
+            _currentVacancyPage = page;
+        }
+
+        public void SetProfileAmount(int amount)
+        {
+            _amountProfile = amount;
+        }
+
+        public void SetVacancyAmount(int amount)
+        {
+            _amountVacancy = amount;
         }
 
         private void StartBackgroundBuffering(bool backgroundLoading)
@@ -78,7 +90,12 @@ namespace Communicator
 
         public List<Profile> GetProfiles(int page)
         {
-            return FetchProfiles(page, _amount);
+            return FetchProfiles(page, _amountProfile);
+        }
+
+        public List<Vacancy> GetVacancies(int page)
+        {
+            return FetchVacancies(page, _amountVacancy);
         }
 
         public bool HasNextProfiles()
@@ -108,23 +125,24 @@ namespace Communicator
 
         private void LoadNextProfileBuffer()
         {
-            List<Profile> wl = FetchProfiles(_currentPage, _amount);
+            List<Profile> wl = FetchProfiles(_currentProfilePage, _amountProfile);
             if (wl.Count == 0)
             {
                 StopBackgroundBuffering();
                 return;
             }
-            _currentPage++;
+            _currentProfilePage++;
             _wbuffer.Enqueue(wl);
         }
 
         private void LoadNextVacancyBuffer()
         {
-            List<Vacancy> vl = FetchVacancies(1, 10000);
+            List<Vacancy> vl = FetchVacancies(_currentVacancyPage, _amountVacancy);
             if (vl.Count == 0)
             {
                 return;
             }
+            _currentVacancyPage++;
             _vbuffer.Enqueue(vl);
         }
 
