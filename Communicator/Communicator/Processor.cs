@@ -13,9 +13,11 @@ namespace Communicator
         private int _currentVacancyPage = 1;
         private int _amountProfile = 25;
         private int _amountVacancy = 25;
+        private int _pageCountProfile;
+        private int _pageCountVacancy;
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
-        private const string VacatureLink = "vacatures";
+        private const string VacancyLink = "vacatures";
         private const int BufferThreadDelay = 15000;
         private Thread _bufferThread = null;
         private bool _bufferThreadAlive = false;
@@ -70,6 +72,26 @@ namespace Communicator
         public void StopBackgroundBuffering()
         {
             _bufferThreadAlive = false;
+        }
+
+        public int GuessProfileEntryCount()
+        {
+            return GetProfilePageCount() * _amountProfile;
+        }
+
+        public int GuessVacancyEntryCount()
+        {
+            return GetVacancyPageCount() * _amountVacancy;
+        }
+
+        public int GetProfilePageCount()
+        {
+            return rc.GetPageCount(ProfileLink, _amountProfile);
+        }
+
+        public int GetVacancyPageCount()
+        {
+            return rc.GetPageCount(VacancyLink, _amountVacancy);
         }
 
         public List<Profile> GetNextProfiles()
@@ -148,7 +170,7 @@ namespace Communicator
 
         private List<Vacancy> FetchVacancies(int begin, int amount)
         {
-            List<Entity> r = rc.GetFromREST(VacatureLink, begin, amount);
+            List<Entity> r = rc.GetFromREST(VacancyLink, begin, amount);
             return ToVacancy(r);
         }
 

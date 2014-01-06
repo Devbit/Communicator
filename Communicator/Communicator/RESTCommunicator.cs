@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using RestSharp.Deserializers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using RestSharp.Contrib;
+using System.Diagnostics;
 
 namespace Communicator
 {
@@ -32,19 +35,31 @@ namespace Communicator
             {
                 return new List<Entity>();
             }
-            RestClient client = new RestClient(baseURL);
-            client.AddHandler("application/json", new DynamicJsonDeserializer());
-            RestRequest request = new RestRequest(link);
-
-            request.AddParameter("page", page);
-            request.AddParameter("max_results", limit);
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Authorization", Auth);
-
-            IRestResponse<JObject> response = client.Execute<JObject>(request);
+            IRestResponse<JObject> response = MakeRequest(link, page, limit);
 
             List<Entity> results = ParseResponse(response.Data);
             return results;
+        }
+
+        public int GetPageCount(string link, int limit = 25)
+        {
+            if (link == "")
+            {
+                return 0;
+            }
+            IRestResponse<JObject> response = MakeRequest(link, 1, limit);
+            JObject responseD = response.Data;
+            Links links = new Links();
+            links = JsonConvert.DeserializeObject<Links>(responseD["_links"].ToString());
+            if (links.last != null)
+            {
+                Debug.WriteLine((string)links.last["href"]);
+                Uri last = new Uri("http://" + (string)links.last["href"]);
+                string amount = HttpUtility.ParseQueryString(last.Query).Get("page");
+                return int.Parse(amount);
+            }
+            return 0;
+
         }
 
         private List<Entity> ParseResponse(JObject response){
@@ -63,6 +78,21 @@ namespace Communicator
             }
             
             return result;
+        }
+
+        private IRestResponse<JObject> MakeRequest(string link, int page, int limit)
+        {
+            RestClient client = new RestClient(baseURL);
+            client.AddHandler("application/json", new DynamicJsonDeserializer());
+            RestRequest request = new RestRequest(link);
+
+            request.AddParameter("page", page);
+            request.AddParameter("max_results", limit);
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Authorization", Auth);
+
+            IRestResponse<JObject> response = client.Execute<JObject>(request);
+            return response;
         }
     }
 
@@ -83,6 +113,12 @@ namespace Communicator
         public JObject next { get; set; }
         public JObject last { get; set; }
         public JObject parent { get; set; }
+    }
+
+    internal class InnerLink
+    {
+        public string href { get; set; }
+        public string title { get; set; }
     }
 
     internal class DynamicJsonDeserializer : IDeserializer
