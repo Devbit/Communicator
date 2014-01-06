@@ -113,4 +113,21 @@ namespace Communicator
         public string location { get; set; }
     }
 
+    public class Match
+    {
+        public string _id { get; set; }
+        public Profile profile { get; set; }
+        public Vacancy vacancy { get; set; }
+        public List<MatchFactor> factors { get; set; }
+        public int strength { get; set; }
+        public string date_created { get; set; }
+    }
+
+    public class MatchFactor
+    {
+        public string factor { get; set; }
+        public int strength { get; set; }
+        public string text { get; set; }
+    }
+
 }
