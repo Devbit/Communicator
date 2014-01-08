@@ -127,7 +127,7 @@ namespace Communicator
     {
         public string factor { get; set; }
         public double strength { get; set; }
-        public double multiplier { get; set; }
+        public int multiplier { get; set; }
         public string text { get; set; }
     }
 
