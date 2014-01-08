@@ -119,14 +119,15 @@ namespace Communicator
         public Profile profile { get; set; }
         public Vacancy vacancy { get; set; }
         public List<MatchFactor> factors { get; set; }
-        public int strength { get; set; }
+        public double strength { get; set; }
         public string date_created { get; set; }
     }
 
     public class MatchFactor
     {
         public string factor { get; set; }
-        public int strength { get; set; }
+        public double strength { get; set; }
+        public double multiplier { get; set; }
         public string text { get; set; }
     }
 
