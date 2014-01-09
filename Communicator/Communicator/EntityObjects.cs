@@ -30,6 +30,14 @@ namespace Communicator
     {
         public string firstname { get; set; }
         public string lastname { get; set; }
+
+        public string fullname
+        {
+            get
+            {
+                return string.Format("{0}, {1}", this.firstname, this.lastname);
+            }
+        }
     }
 
     public class Language
