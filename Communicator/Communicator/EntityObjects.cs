@@ -35,7 +35,7 @@ namespace Communicator
         {
             get
             {
-                return string.Format("{0}, {1}", this.firstname, this.lastname);
+                return string.Format("{0} {1}", this.firstname, this.lastname);
             }
         }
     }
