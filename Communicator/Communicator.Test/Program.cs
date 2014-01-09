@@ -13,12 +13,12 @@ namespace Communicator.Test
         {
             //RESTCommunicator db = new RESTCommunicator("http://127.0.0.1:5000");
             //db.GetFromREST("profiles", 1, 1);
-            Processor pc = new Processor("http://127.0.0.1:5000");
+            Processor pc = new Processor("http://127.0.0.1:28000");
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine(pc.GuessProfileEntryCount());
-                //PrintAll(pc);
+                //Console.WriteLine(pc.GetProfileEntryCount());
+                PrintAll(pc);
                 Console.ReadKey();
             }
 
