@@ -74,14 +74,24 @@ namespace Communicator
             _bufferThreadAlive = false;
         }
 
-        public int GetProfileEntryCount()
+        public int GuessProfileEntryCount()
         {
-            return rc.GetEntryCount(ProfileLink);
+            return GetProfilePageCount() * _amountProfile;
         }
 
-        public int GetVacancyEntryCount()
+        public int GuessVacancyEntryCount()
         {
-            return rc.GetEntryCount(VacancyLink);
+            return GetVacancyPageCount() * _amountVacancy;
+        }
+
+        public int GetProfilePageCount()
+        {
+            return rc.GetPageCount(ProfileLink, _amountProfile);
+        }
+
+        public int GetVacancyPageCount()
+        {
+            return rc.GetPageCount(VacancyLink, _amountVacancy);
         }
 
         public List<Profile> GetNextProfiles()
