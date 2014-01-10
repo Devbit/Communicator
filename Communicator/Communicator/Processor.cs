@@ -18,7 +18,7 @@ namespace Communicator
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
         private const string VacancyLink = "vacatures";
-        private const int BufferThreadDelay = 15000;
+        private int _bufferThreadDelay = 15000;
         private Thread _bufferThread = null;
         private bool _bufferThreadAlive = false;
         private readonly ConcurrentQueue<List<Profile>> _wbuffer = new ConcurrentQueue<List<Profile>>();
@@ -48,6 +48,11 @@ namespace Communicator
         public void SetVacancyAmount(int amount)
         {
             _amountVacancy = amount;
+        }
+
+        public void SetBackgroundBufferDelay(int delay)
+        {
+            _bufferThreadDelay = delay;
         }
 
         private void StartBackgroundBuffering(bool backgroundLoading)
