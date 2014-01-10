@@ -49,13 +49,11 @@ namespace Communicator
             }
             IRestResponse<JObject> response = MakeRequest(link, 1, limit);
             JObject responseD = response.Data;
-            Links links = new Links();
-            links = JsonConvert.DeserializeObject<Links>(responseD["_links"].ToString());
-            if (links.last != null)
+            var last = responseD["_links"]["last"];
+            if (last != null)
             {
-                Debug.WriteLine((string)links.last["href"]);
-                Uri last = new Uri("http://" + (string)links.last["href"]);
-                string amount = HttpUtility.ParseQueryString(last.Query).Get("page");
+                Uri lastUri = new Uri("http://" + baseURL + "/" + last.Value<string>("href"));
+                string amount = HttpUtility.ParseQueryString(lastUri.Query).Get("page");
                 return int.Parse(amount);
             }
             return 0;
@@ -70,9 +68,7 @@ namespace Communicator
                 result.Add(new Entity(k));
             }
 
-            Links links = new Links();
-            links = JsonConvert.DeserializeObject<Links>(response["_links"].ToString());
-            if (links.next == null)
+            if (response["_links"]["next"] == null)
             {
                 _hasNextPage = false;
             }
@@ -104,21 +100,6 @@ namespace Communicator
         {
             this.data = j;
         }
-    }
-
-    internal class Links
-    {
-        public JObject self { get; set; }
-        public JObject prev { get; set; }
-        public JObject next { get; set; }
-        public JObject last { get; set; }
-        public JObject parent { get; set; }
-    }
-
-    internal class InnerLink
-    {
-        public string href { get; set; }
-        public string title { get; set; }
     }
 
     internal class DynamicJsonDeserializer : IDeserializer
