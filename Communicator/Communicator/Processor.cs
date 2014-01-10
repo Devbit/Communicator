@@ -70,7 +70,7 @@ namespace Communicator
             while (_bufferThreadAlive)
             {
                 LoadNextProfileBuffer();
-                Thread.Sleep(BufferThreadDelay);
+                Thread.Sleep(_bufferThreadDelay);
             }
         }
 
