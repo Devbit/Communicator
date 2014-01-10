@@ -17,7 +17,7 @@ namespace Communicator.Test
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine(pc.GuessProfileEntryCount());
+                Console.WriteLine(pc.GetProfileEntryCount());
                 //PrintAll(pc);
                 Console.ReadKey();
             }
