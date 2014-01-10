@@ -76,12 +76,12 @@ namespace Communicator
 
         public int GuessProfileEntryCount()
         {
-            return GetProfilePageCount() * _amountProfile;
+            return rc.GetEntryCount(ProfileLink);
         }
 
         public int GuessVacancyEntryCount()
         {
-            return GetVacancyPageCount() * _amountVacancy;
+            return rc.GetEntryCount(VacancyLink);
         }
 
         public int GetProfilePageCount()

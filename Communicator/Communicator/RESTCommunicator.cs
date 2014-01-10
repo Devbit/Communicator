@@ -41,6 +41,12 @@ namespace Communicator
             return results;
         }
 
+        public int GetEntryCount(string link)
+        {
+            IRestResponse<JObject> response = MakeRequest(link, 1, 1);
+            return response.Data["meta"].Value<int>("total_count");
+        }
+
         public int GetPageCount(string link, int limit = 25)
         {
             if (link == "")
