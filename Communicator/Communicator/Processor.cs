@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace Communicator
         private const string BaseLink = "http://127.0.0.1:5000";
         private const string ProfileLink = "profiles";
         private const string VacancyLink = "vacatures";
+        private const string MatchLink = "matches";
         private int _bufferThreadDelay = 15000;
         private Thread _bufferThread = null;
         private bool _bufferThreadAlive = false;
@@ -97,6 +100,38 @@ namespace Communicator
         public int GetVacancyPageCount()
         {
             return rc.GetPageCount(VacancyLink, _amountVacancy);
+        }
+
+        public void SaveMatch(Match match)
+        {
+            JsonMatch jsonMatch = new JsonMatch();
+            jsonMatch.profile = match.profile._id;
+            jsonMatch.vacancy = match.vacancy._id;
+            jsonMatch.factors = match.factors;
+            jsonMatch.strength = match.strength;
+            jsonMatch.date_created = new DateTime().ToString("yyyyMMddHHmmss");
+            jsonMatch._id = CreateMD5Hash(jsonMatch.profile + ":" + jsonMatch.vacancy);
+            string jsonString = JsonConvert.SerializeObject(jsonMatch);
+            InsertIntoDatabase(jsonString, MatchLink);
+        }
+
+        private string CreateMD5Hash(string input)
+        {
+            // Use input string to calculate MD5 hash
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            // Convert the byte array to hexadecimal string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("x2"));
+                // To force the hex string to lower-case letters instead of
+                // upper-case, use he following line instead:
+                // sb.Append(hashBytes[i].ToString("x2")); 
+            }
+            return sb.ToString();
         }
 
         public List<Profile> GetNextProfiles()
@@ -183,6 +218,11 @@ namespace Communicator
         {
             List<Entity> r = rc.GetFromREST(ProfileLink, begin, amount);
             return ToProfile(r);
+        }
+
+        private void InsertIntoDatabase(string json, string collection)
+        {
+            rc.PostToREST(json, collection);
         }
 
         private List<Profile> ToProfile(List<Entity> result)

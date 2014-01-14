@@ -131,6 +131,16 @@ namespace Communicator
         public string date_created { get; set; }
     }
 
+    public class JsonMatch
+    {
+        public string _id { get; set; }
+        public string profile { get; set; }
+        public string vacancy { get; set; }
+        public List<MatchFactor> factors { get; set; }
+        public double strength { get; set; }
+        public string date_created { get; set; }
+    }
+
     public class MatchFactor
     {
         public string factor { get; set; }

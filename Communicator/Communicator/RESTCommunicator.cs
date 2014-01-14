@@ -12,7 +12,6 @@ namespace Communicator
     public class RESTCommunicator
     {
         private string baseURL = "";
-        private const string Auth = "Basic YWRtaW46dHpsVlEzRG4zd1Jwc3JONnNjY1U5b0ZvUENmS21B";
         private int _lastPage;
         private bool _hasNextPage = true;
 
@@ -39,6 +38,11 @@ namespace Communicator
 
             List<Entity> results = ParseResponse(response.Data);
             return results;
+        }
+
+        public void PostToREST(string json, string link)
+        {
+            Debug.WriteLine(json);
         }
 
         public int GetEntryCount(string link)
@@ -91,7 +95,6 @@ namespace Communicator
             request.AddParameter("page", page);
             request.AddParameter("max_results", limit);
             request.AddHeader("Accept", "application/json");
-            request.AddHeader("Authorization", Auth);
 
             IRestResponse<JObject> response = client.Execute<JObject>(request);
             return response;
