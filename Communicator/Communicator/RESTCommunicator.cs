@@ -42,7 +42,18 @@ namespace Communicator
 
         public void PostToREST(string json, string link)
         {
-            Debug.WriteLine(json);
+            if (link.Length == 0 || json.Length == 0)
+            {
+                return;
+            }
+            RestClient client = new RestClient(baseURL);
+            RestRequest request = new RestRequest(link, Method.POST);
+            request.AddParameter("application/json; charset=utf-8", json, ParameterType.RequestBody);
+            request.RequestFormat = DataFormat.Json;
+
+            var response = client.Execute(request);
+
+            //Debug.WriteLine(response.Content);
         }
 
         public int GetEntryCount(string link)
@@ -70,7 +81,8 @@ namespace Communicator
 
         }
 
-        private List<Entity> ParseResponse(JObject response){
+        private List<Entity> ParseResponse(JObject response)
+        {
             List<Entity> result = new List<Entity>();
             List<JObject> t = JsonConvert.DeserializeObject<List<JObject>>(response["_items"].ToString());
             foreach (JObject k in t)
