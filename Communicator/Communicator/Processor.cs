@@ -128,12 +128,12 @@ namespace Communicator
 
         public bool InsertDocument(string json, string collectionLink)
         {
-            if (!json || json.Length == 0 || !collectionLink || collectionLink.Length == 0)
+            if (json.Length == 0 || collectionLink.Length == 0)
             {
-                return;
+                return false;
             }
 
-            return rc.PostToREST(json, collection);
+            return rc.PostToREST(json, collectionLink);
         }
 
         public List<Profile> GetProfiles(int page)
@@ -148,7 +148,7 @@ namespace Communicator
 
         public List<JsonMatch> GetMatches(int page)
         {
-            return FetchVacancies(page, _amountMatch);
+            return FetchMatches(page, _amountMatch);
         }
 
         public bool HasNextProfiles()
@@ -242,7 +242,7 @@ namespace Communicator
                 return;
             }
             _currentMatchPage++;
-            _mbuffer.Enqueue(vl);
+            _mbuffer.Enqueue(ml);
         }
 
         private List<Profile> FetchProfiles(int begin, int amount)

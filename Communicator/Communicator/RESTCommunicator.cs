@@ -45,7 +45,7 @@ namespace Communicator
         {
             if (link.Length == 0 || json.Length == 0)
             {
-                return;
+                return false;
             }
             RestClient client = new RestClient(baseURL);
             RestRequest request = new RestRequest(link, Method.POST);
