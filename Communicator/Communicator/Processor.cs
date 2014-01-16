@@ -20,7 +20,7 @@ namespace Communicator
         private int _pageCountProfile;
         private int _pageCountVacancy;
         private int _pageCountMatch;
-        private const string BaseLink = "http://127.0.0.1:5000";
+        private const string BaseLink = "http://127.0.0.1:29000";
         private const string ProfileLink = "profiles";
         private const string VacancyLink = "vacatures";
         private const string MatchLink = "matches";
