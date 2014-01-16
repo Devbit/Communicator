@@ -102,36 +102,14 @@ namespace Communicator
             return rc.GetPageCount(VacancyLink, _amountVacancy);
         }
 
-        public void SaveMatch(Match match)
+        public bool InsertDocument(string json, string collectionLink)
         {
-            JsonMatch jsonMatch = new JsonMatch();
-            jsonMatch.profile = match.profile._id;
-            jsonMatch.vacancy = match.vacancy._id;
-            jsonMatch.factors = match.factors;
-            jsonMatch.strength = match.strength;
-            jsonMatch.date_created = new DateTime().ToString("yyyyMMddHHmmss");
-            jsonMatch._id = CreateMD5Hash(jsonMatch.profile + ":" + jsonMatch.vacancy);
-            string jsonString = JsonConvert.SerializeObject(jsonMatch);
-            InsertIntoDatabase(jsonString, MatchLink);
-        }
-
-        private string CreateMD5Hash(string input)
-        {
-            // Use input string to calculate MD5 hash
-            MD5 md5 = System.Security.Cryptography.MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-            // Convert the byte array to hexadecimal string
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
+            if (!json || json.Length == 0 || !collectionLink || collectionLink.Length == 0)
             {
-                sb.Append(hashBytes[i].ToString("x2"));
-                // To force the hex string to lower-case letters instead of
-                // upper-case, use he following line instead:
-                // sb.Append(hashBytes[i].ToString("x2")); 
+                return;
             }
-            return sb.ToString();
+
+            return rc.PostToREST(json, collection);
         }
 
         public List<Profile> GetNextProfiles()
@@ -218,11 +196,6 @@ namespace Communicator
         {
             List<Entity> r = rc.GetFromREST(ProfileLink, begin, amount);
             return ToProfile(r);
-        }
-
-        private void InsertIntoDatabase(string json, string collection)
-        {
-            rc.PostToREST(json, collection);
         }
 
         private List<Profile> ToProfile(List<Entity> result)

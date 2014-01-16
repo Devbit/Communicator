@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using RestSharp.Contrib;
 using System.Diagnostics;
+using System.Net;
 
 namespace Communicator
 {
@@ -40,7 +41,7 @@ namespace Communicator
             return results;
         }
 
-        public void PostToREST(string json, string link)
+        public bool PostToREST(string json, string link)
         {
             if (link.Length == 0 || json.Length == 0)
             {
@@ -52,7 +53,14 @@ namespace Communicator
             request.RequestFormat = DataFormat.Json;
 
             var response = client.Execute(request);
-
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
             //Debug.WriteLine(response.Content);
         }
 
