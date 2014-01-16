@@ -257,7 +257,7 @@ namespace Communicator
             return ToVacancy(r);
         }
 
-        private List<JsonMatch> FetchProfiles(int begin, int amount)
+        private List<JsonMatch> FetchMatches(int begin, int amount)
         {
             List<Entity> r = rc.GetFromREST(MatchLink, begin, amount);
             return ToMatch(r);
