@@ -29,7 +29,7 @@ namespace Communicator
             return _hasNextPage;
         }
 
-        public List<Entity> GetFromREST(string link, int page = 1, int limit, string sort, string filter)
+        public List<Entity> GetFromREST(string link, int page, int limit, string sort, string filter)
         {
             if (link == "" || (!_hasNextPage && page == _lastPage))
             {
@@ -106,7 +106,7 @@ namespace Communicator
             return result;
         }
 
-        private IRestResponse<JObject> MakeRequest(string link, int page, int limit, string sort, string filter)
+        private IRestResponse<JObject> MakeRequest(string link, int page, int limit, string sort = "", string filter = "")
         {
             RestClient client = new RestClient(baseURL);
             client.AddHandler("application/json", new DynamicJsonDeserializer());
