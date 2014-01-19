@@ -136,19 +136,19 @@ namespace Communicator
             return rc.PostToREST(json, collectionLink);
         }
 
-        public List<Profile> GetProfiles(int page)
+        public List<Profile> GetProfiles(int page, int amount = _amountProfile, string sort = "", string filter = "")
         {
-            return FetchProfiles(page, _amountProfile);
+            return FetchProfiles(page, amount, sort, filter);
         }
 
-        public List<Vacancy> GetVacancies(int page)
+        public List<Vacancy> GetVacancies(int page, int amount = _amountVacancy, string sort = "", string filter = "")
         {
-            return FetchVacancies(page, _amountVacancy);
+            return FetchVacancies(page, amount, sort, filter);
         }
 
-        public List<JsonMatch> GetMatches(int page)
+        public List<JsonMatch> GetMatches(int page, int amount = _amountMatch, string sort = "", string filter = "")
         {
-            return FetchMatches(page, _amountMatch);
+            return FetchMatches(page, amount, sort, filter);
         }
 
         public bool HasNextProfiles()
@@ -245,21 +245,21 @@ namespace Communicator
             _mbuffer.Enqueue(ml);
         }
 
-        private List<Profile> FetchProfiles(int begin, int amount)
+        private List<Profile> FetchProfiles(int begin, int amount, string sort, string filter)
         {
-            List<Entity> r = rc.GetFromREST(ProfileLink, begin, amount);
+            List<Entity> r = rc.GetFromREST(ProfileLink, begin, amount, sort, filter);
             return ToProfile(r);
         }
 
-        private List<Vacancy> FetchVacancies(int begin, int amount)
+        private List<Vacancy> FetchVacancies(int begin, int amount, string sort, string filter)
         {
-            List<Entity> r = rc.GetFromREST(VacancyLink, begin, amount);
+            List<Entity> r = rc.GetFromREST(VacancyLink, begin, amount, sort, filter);
             return ToVacancy(r);
         }
 
-        private List<JsonMatch> FetchMatches(int begin, int amount)
+        private List<JsonMatch> FetchMatches(int begin, int amount, string sort, string filter)
         {
-            List<Entity> r = rc.GetFromREST(MatchLink, begin, amount);
+            List<Entity> r = rc.GetFromREST(MatchLink, begin, amount, sort, filter);
             return ToMatch(r);
         }
 

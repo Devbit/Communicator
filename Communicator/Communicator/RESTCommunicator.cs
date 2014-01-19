@@ -29,13 +29,13 @@ namespace Communicator
             return _hasNextPage;
         }
 
-        public List<Entity> GetFromREST(string link, int page = 1, int limit = 25)
+        public List<Entity> GetFromREST(string link, int page = 1, int limit, string sort, string filter)
         {
             if (link == "" || (!_hasNextPage && page == _lastPage))
             {
                 return new List<Entity>();
             }
-            IRestResponse<JObject> response = MakeRequest(link, page, limit);
+            IRestResponse<JObject> response = MakeRequest(link, page, limit, sort, filter);
 
             List<Entity> results = ParseResponse(response.Data);
             return results;
@@ -106,7 +106,7 @@ namespace Communicator
             return result;
         }
 
-        private IRestResponse<JObject> MakeRequest(string link, int page, int limit)
+        private IRestResponse<JObject> MakeRequest(string link, int page, int limit, string sort, string filter)
         {
             RestClient client = new RestClient(baseURL);
             client.AddHandler("application/json", new DynamicJsonDeserializer());
@@ -114,6 +114,8 @@ namespace Communicator
 
             request.AddParameter("page", page);
             request.AddParameter("max_results", limit);
+            request.AddParameter("sort", sort);
+            request.AddParameter("where", filter);
             request.AddHeader("Accept", "application/json");
 
             IRestResponse<JObject> response = client.Execute<JObject>(request);
